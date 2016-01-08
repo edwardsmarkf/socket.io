@@ -1,0 +1,41 @@
+// this is the simplest socket.io example with an external webpage
+
+var http = require('http');
+
+var app = http.createServer(function(req, res) {
+        console.log('createServer');
+});
+app.listen(3000);
+
+var io = require('socket.io').listen(app);
+
+io.on('connection', function(socket) {
+    io.emit('Server 2 Client Message', 'Welcome!' );
+
+    socket.on('Client 2 Server Message', function(message)      {
+        console.log(message);
+        io.emit('Server 2 Client Message', message.toUpperCase() );     //upcase it
+    });
+
+});
+==================
+<html>
+    <head>
+        <script type='text/javascript' src='http://myDomain[dot]com:3000/socket.io/socket.io.js'></script>
+        <script type='text/javascript'>
+                var socket = io(':3000');
+                socket.on ('Server 2 Client Message', function(messageFromServer)       {
+                        console.log ('server said: ' + messageFromServer);
+                });
+
+        </script>
+    </head>
+    <body>
+        <h5>Worlds smallest Socket.io example to uppercase strings</h5>
+        <p>
+        <a href='#' onClick="javascript:socket.emit('Client 2 Server Message', 'return UPPERCASED in the console');">return UPPERCASED in the console</a>
+                <br />
+                socket.emit('Client 2 Server Message', 'try cut/paste this command in your console!');
+        </p>
+    </body>
+</html>
